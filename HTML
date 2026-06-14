@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BestTours</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #eef2f3;
+  margin: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.hidden { display: none; }
+
+.chat-box {
+  height: 180px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="login" class="card">
+  <h2>BestTours Login</h2>
+  <input type="text" id="name" placeholder="Name">
+  <input type="email" id="email" placeholder="Email">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <div class="card">
+    <h2>Welcome, <span id="user"></span></h2>
+  </div>
+
+  <!-- LOCATION -->
+  <div class="card">
+    <h3>Select Destination</h3>
+
+    <select id="continent" onchange="loadCountries()">
+      <option value="">Select Continent</option>
+      <option>Africa</option>
+      <option>Europe</option>
+      <option>Asia</option>
+      <option>North America</option>
+      <option>South America</option>
+      <option>Australia</option>
+      <option>Antarctica</option>
+    </select>
+
+    <select id="country" onchange="loadProvinces()"></select>
+    <select id="province" onchange="loadCities()"></select>
+    <select id="city"></select>
+  </div>
+
+  <!-- CHAT -->
+  <div class="card">
+    <h3>Chat Assistant</h3>
+    <div class="chat-box" id="chatBox"></div>
+    <input id="chatInput" placeholder="Ask something...">
+    <button onclick="sendChat()">Send</button>
+  </div>
+
+  <!-- TRANSLATION -->
+  <div class="card">
+    <h3>Translation Assistant</h3>
+    <input id="text" placeholder="Enter text">
+    <select id="lang">
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+    </select>
+    <button onclick="translateText()">Translate</button>
+    <p id="result"></p>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+
+// LOGIN
+function login() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+
+  if (!name || !email) {
+    alert("Fill all fields");
+    return;
+  }
+
+  document.getElementById("user").innerText = name;
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+}
+
+// SIMPLE DATA
+const data = {
+  Africa: {
+    SouthAfrica: {
+      "Western Cape": ["Cape Town", "Stellenbosch"],
+      "Gauteng": ["Johannesburg", "Pretoria"]
+    }
+  },
+  Europe: {
+    France: {
+      "Île-de-France": ["Paris"]
+    }
+  }
+};
+
+// COUNTRIES
+function loadCountries() {
+  let c = document.getElementById("continent").value;
+  let country = document.getElementById("country");
+
+  country.innerHTML = "<option>Select Country</option>";
+  document.getElementById("province").innerHTML = "";
+  document.getElementById("city").innerHTML = "";
+
+  if (data[c]) {
+    Object.keys(data[c]).forEach(i => {
+      country.innerHTML += `<option>${i}</option>`;
+    });
+  }
+}
+
+// PROVINCES
+function loadProvinces() {
+  let c = document.getElementById("continent").value;
+  let co = document.getElementById("country").value;
+  let province = document.getElementById("province");
+
+  province.innerHTML = "<option>Select Province</option>";
+  document.getElementById("city").innerHTML = "";
+
+  Object.keys(data[c][co]).forEach(p => {
+    province.innerHTML += `<option>${p}</option>`;
+  });
+}
+
+// CITIES
+function loadCities() {
+  let c = document.getElementById("continent").value;
+  let co = document.getElementById("country").value;
+  let p = document.getElementById("province").value;
+  let city = document.getElementById("city");
+
+  city.innerHTML = "<option>Select City</option>";
+
+  data[c][co][p].forEach(x => {
+    city.innerHTML += `<option>${x}</option>`;
+  });
+}
+
+// CHAT
+function sendChat() {
+  let input = document.getElementById("chatInput").value;
+  let box = document.getElementById("chatBox");
+
+  let reply = "I can help you plan trips.";
+
+  if (input.toLowerCase().includes("hello")) {
+    reply = "Hello! Where would you like to travel?";
+  }
+
+  box.innerHTML += `<p><b>You:</b> ${input}</p>`;
+  box.innerHTML += `<p><b>Bot:</b> ${reply}</p>`;
+  document.getElementById("chatInput").value = "";
+}
+
+// TRANSLATION (demo)
+function translateText() {
+  let text = document.getElementById("text").value;
+  let lang = document.getElementById("lang").value;
+
+  document.getElementById("result").innerText =
+    "Translated (" + lang + "): " + text;
+}
+
+</script>
+
+</body>
+</html>
